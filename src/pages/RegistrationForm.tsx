@@ -17,7 +17,7 @@ const RegistrationForm: React.FC = () => {
     event.preventDefault();
   
     try {
-      await axios.post(`${apiUrl}/auth/register/buyer`, {
+      await axios.post(`${process.env.REACT_APP_API_URL}/auth/register/buyer`, {
         name,
         email,
         password,
