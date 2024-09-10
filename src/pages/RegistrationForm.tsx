@@ -8,11 +8,16 @@ const RegistrationForm: React.FC = () => {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
+  const apiUrl = process.env.NODE_ENV === 'development'
+  ? 'http://localhost:8080'
+  : process.env.REACT_APP_API_URL;
+
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
+  
     try {
-      await axios.post('http://localhost:8080/auth/register/buyer', {
+      await axios.post(`${apiUrl}/auth/register/buyer`, {
         name,
         email,
         password,
@@ -22,6 +27,7 @@ const RegistrationForm: React.FC = () => {
       setMessage('Registration failed. Please try again.');
     }
   };
+  
 
   return (
     <Box
