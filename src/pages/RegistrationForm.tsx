@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { Button, TextField, Box, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const RegistrationForm: React.FC = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const apiUrl = process.env.NODE_ENV === 'development'
   ? 'http://localhost:8080'
@@ -23,6 +26,8 @@ const RegistrationForm: React.FC = () => {
         password,
       });
       setMessage('Registration successful!');
+      navigate('/registration-success');
+
     } catch (error) {
       setMessage('Registration failed. Please try again.');
     }
