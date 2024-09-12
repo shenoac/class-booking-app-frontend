@@ -5,6 +5,8 @@ import LoginForm from './pages/LoginForm';
 import Dashboard from './pages/Dashboard';
 import RegistrationSuccess from './pages/RegistrationSuccess';
 import VerifyEmail from './pages/VerifyEmail';
+import PasswordResetRequest from './pages/PasswordResetRequest';
+import ResetPassword from './pages/ResetPassword';
 
 const App: React.FC = () => {
   return (
@@ -15,6 +17,8 @@ const App: React.FC = () => {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/registration-success" element={<RegistrationSuccess />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/reset-password-request" element={<PasswordResetRequest />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </Router>
   );
