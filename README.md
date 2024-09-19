@@ -73,39 +73,57 @@ Studio Sessions Project - Overview (non-technical)
 Studio Sessions is a modular microservices-based application designed to connect artists with students for art classes. Each module serves a distinct purpose and is deployed and managed independently. The system uses a combination of technologies to ensure scalability, flexibility, and security.
 
 Key Components:
-User Management Service (Java/Quarkus): Handles user registration, authentication, and role-based access (Artist, Student, Admin).
-Class Management Service (Node.js/Express): Manages the creation, scheduling, and booking of classes.
-Payment Service (Node.js/Express): Facilitates secure payment processing for booking classes.
-Frontend Application (React/TypeScript): Provides an interactive user interface for students and artists to interact with the platform.
-Microservices:
-User Management Service:
 
+User Management Service (Java/Quarkus): Handles user registration, authentication, and role-based access (Artist, Student, Admin).
+
+Class Management Service (Node.js/Express): Manages the creation, scheduling, and booking of classes.
+
+Payment Service (Node.js/Express): Facilitates secure payment processing for booking classes.
+
+Frontend Application (React/TypeScript): Provides an interactive user interface for students and artists to interact with the platform.
+
+Microservices:
+
+User Management Service:
 Built with Java (Quarkus).
 Handles user roles (Artist, Student, Admin) and JWT-based authentication.
 Externalized configuration for secure handling of environment-specific settings.
 REST API-based communication with the frontend.
-Class Management Service:
 
+Class Management Service:
 Node.js/Express microservice.
 Manages the creation of classes by artists and booking by students.
 Interfaces with the Payment Service for booking payments.
-Payment Service:
 
+Payment Service:
 Node.js/Express microservice with Stripe/PayPal integration.
 Manages one-time payments for individual classes.
+
 Integration Patterns:
 API Gateway (future implementation): Will act as a single entry point for client requests, routing them to the appropriate microservices.
+
 Service Communication: Microservices communicate over HTTP/REST, using JSON payloads. In the future, lightweight messaging (e.g., RabbitMQ) could be added for events like class bookings.
+
 2. Data Management
+
 Each microservice is responsible for its own data, ensuring loose coupling between components. Data management is handled via:
 
 User Management Service: PostgreSQL database for user information, roles, and profiles.
+
 Class Management Service: In-memory data storage for class scheduling, with plans for future persistence using PostgreSQL.
+
 Payment Service: Payment data is managed securely through third-party payment processors (e.g., Stripe/PayPal).
+
 3. Security
+
 JWT Authentication: The User Management Service handles secure authentication using JSON Web Tokens (JWT).
+
 Role-Based Access Control: Each endpoint in the User Management Service requires specific user roles (Artist, Student, Admin), ensuring that only authorized users can access certain features.
+
 Externalized Configuration: Sensitive information, such as database passwords and mailer credentials, are stored securely as environment variables.
+
 4. Deployment
+
 Local Development: Services are run locally using Quarkus for Java and Node.js for Express-based microservices.
+
 Production Deployment: The backend is deployed on Heroku, with plans to potentially scale specific services using containerization (e.g., Docker) and orchestration tools (e.g., Kubernetes).
