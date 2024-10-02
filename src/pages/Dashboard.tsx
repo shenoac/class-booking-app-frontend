@@ -1,7 +1,8 @@
-import React from 'react';
-import { Typography, Box, Button } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Typography, Box, Button, Card, CardContent, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from 'axios';
 
 // Custom theme with your color scheme
 const theme = createTheme({
@@ -23,6 +24,33 @@ const theme = createTheme({
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      try {
+        const response = await axios.get('http://localhost:8080/auth/my-bookings', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setBookings(response.data); // Store bookings data in state
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+      } finally {
+        setLoading(false); // Stop the loading spinner once the call is done
+      }
+    };
+
+    fetchBookings();
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem('authToken');
@@ -34,21 +62,53 @@ const Dashboard: React.FC = () => {
     <ThemeProvider theme={theme}>
       <Box
         sx={{
-          backgroundColor: theme.palette.background.default,  // White background
-          padding: 3,  // Padding around the entire form
-          borderRadius: '8px',  // Rounded corners
-          border: '1px solid white',  // White border around the content
-          boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',  // Optional: light shadow for effect
-          maxWidth: '600px',  // Restrict width if needed
-          margin: '50px auto',  // Center the content and add margin from top
-          textAlign: 'center', // Center-align the text
+          backgroundColor: theme.palette.background.default,
+          padding: 3,
+          borderRadius: '8px',
+          border: '1px solid white',
+          boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',
+          maxWidth: '600px',
+          margin: '50px auto',
+          textAlign: 'center',
         }}
       >
-        <Typography variant="h3" gutterBottom>
-          Welcome to the Dashboard
+        <Typography variant="h5" gutterBottom>
+          My Bookings
         </Typography>
 
-        <Button variant="contained" color="secondary" onClick={handleLogout}>
+        {loading ? (
+          <CircularProgress />
+        ) : bookings.length > 0 ? (
+          <Box>
+            {bookings.map((booking) => (
+              <Card key={booking.id} sx={{ marginBottom: 2 }}>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    Class ID: {booking.classId}
+                  </Typography>
+                  <Typography variant="body1">
+                    Date: {new Date(booking.bookingDate).toLocaleString()}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Status: {booking.status}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Payment Status: {booking.paymentStatus}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
+        ) : (
+          <Typography variant="body1">You have no bookings yet.</Typography>
+        )}
+
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleLogout}
+          sx={{ marginTop: 2 }} // Add space between cards and button
+        >
           Logout
         </Button>
       </Box>
