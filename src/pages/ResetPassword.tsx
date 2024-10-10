@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Alert } from '@mui/material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -19,30 +19,43 @@ const theme = createTheme({
   },
 });
 
-const ResetPassword: React.FC = () => {
-  const [password, setPassword] = useState('');
+const ChangePassword: React.FC = () => {
+  const [currentPassword, setCurrentPassword] = useState('');  // State for current password
+  const [newPassword, setNewPassword] = useState('');  // State for new password
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
-  const query = new URLSearchParams(useLocation().search);
-  const token = query.get('token');  // Get the token from URL
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     setMessage('');
     setIsError(false);
 
+    const token = localStorage.getItem('authToken');
+    console.log('Got token from storage:', token);
+
+    if (!token) {
+      setMessage('You must be logged in to change your password.');
+      setIsError(true);
+      return;
+    }
+
     try {
-      // API call to reset password
-      const response = await axios.put(`${process.env.REACT_APP_API_URL}/auth/reset-password`, {
-        token,
-        newPassword: password,
+      // API call to change password with currentPassword, newPassword, and token
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/auth/change-password`, {
+        currentPassword,  // Send the current password
+        newPassword,  // Send the new password
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Send the token in the Authorization header
+        }
       });
-      setMessage('Password reset successfully!');
+
+      setMessage('Password changed successfully!');
       setIsError(false);
-      navigate('/login');  // Redirect to login after success
+      navigate('/dashboard');  // Redirect to dashboard after success
     } catch (error: any) {
-      setMessage('Failed to reset password. Please try again.');
+      setMessage('Failed to change password. Please try again.');
       setIsError(true);
     }
   };
@@ -62,7 +75,7 @@ const ResetPassword: React.FC = () => {
         }}
       >
         <Typography variant="h4" gutterBottom>
-          Reset Your Password
+          Change Your Password
         </Typography>
 
         <Box
@@ -75,16 +88,25 @@ const ResetPassword: React.FC = () => {
           }}
         >
           <TextField
+            label="Current Password"
+            type="password"
+            value={currentPassword}  // Add field for current password
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            required
+            fullWidth
+          />
+
+          <TextField
             label="New Password"
             type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={newPassword}  // Use new password state
+            onChange={(e) => setNewPassword(e.target.value)}
             required
             fullWidth
           />
 
           <Button type="submit" variant="contained" color="primary" fullWidth>
-            Reset Password
+            Change Password
           </Button>
 
           {message && (
@@ -98,4 +120,4 @@ const ResetPassword: React.FC = () => {
   );
 };
 
-export default ResetPassword;
+export default ChangePassword;
