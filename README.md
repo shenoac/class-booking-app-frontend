@@ -1,129 +1,104 @@
-Studio Sessions Project - Overview (non-technical)
+# Studio Sessions Project - Overview (Non-Technical)
 
- 1. Users & Roles
-   - Artist:
-     - Description: A user who teaches art classes, manages class offerings, and displays their profile with artwork and achievements.
-     - Goals:
-       - Create and manage class schedules.
-       - Showcase their artwork and profile to attract students.
-       - View and manage bookings and payments.
-     - Key Features:
-       - Profile creation and management (artwork, achievements).
-       - Class management (create/edit classes, set availability, etc.).
-       - Payment management for booked classes.
-     
-   - Student:
-     - Description: A user who registers to take art classes, books sessions, and makes payments.
-     - Goals:
-       - Find and book available art classes.
-       - View their profile and booking history.
-       - Make payments for classes.
-     - Key Features:
-       - Booking system for available classes.
-       - Profile with class history.
-       - Payment integration for easy class booking.
+## 1. Users & Roles
 
-   - Admin (Optional):
-     - Description: A potential admin role to oversee users, classes, and bookings.
-     - Goals:
-       - Manage users (artists and students).
-       - Monitor class activity and bookings.
-     - Key Features:
-       - Dashboard for managing users and content.
-
- 2. High-Level Features
-   - User Profiles:
-     - Artists and students have distinct profile pages.
-     - Artists showcase their artwork and list available classes.
-     - Students can view their booking history and class schedules.
+### - Artist:
+  - **Description**: A user who teaches art classes, manages class offerings, and displays their profile with artwork and achievements.
+  - **Goals**:
+    - Create and manage class schedules.
+    - Showcase their artwork and profile to attract students.
+    - View and manage bookings and payments.
+  - **Key Features**:
+    - Profile creation and management (artwork, achievements).
+    - Class management (create/edit classes, set availability, etc.).
+    - Payment management for booked classes.
    
-   - Class Booking System:
-     - A calendar or schedule system where students can view available classes, book a session, and pay.
-     - Real-time availability updates (optional with WebSockets).
-     - Notification system for booking confirmations and reminders.
-   
-   - Payment Integration:
-     - Integration with payment gateways (e.g., Stripe or PayPal) for booking and paying for classes.
-     - Support for both one-time payments and possible future subscriptions for repeat classes.
+### - Student:
+  - **Description**: A user who registers to take art classes, books sessions, and makes payments.
+  - **Goals**:
+    - Find and book available art classes.
+    - View their profile and booking history.
+    - Make payments for classes.
+  - **Key Features**:
+    - Booking system for available classes.
+    - Profile with class history.
+    - Payment integration for easy class booking.
 
-   - Class Management:
-     - Artists create and manage their class offerings, including setting availability, prices, and capacity.
-     - Artists can manage bookings, view student attendance, and track payments.
+### - Admin (Optional):
+  - **Description**: A potential admin role to oversee users, classes, and bookings.
+  - **Goals**:
+    - Manage users (artists and students).
+    - Monitor class activity and bookings.
+  - **Key Features**:
+    - Dashboard for managing users and content.
 
- 3. Goals
-   - Artists: A platform to showcase their work, manage classes, and earn through bookings.
-   - Students: A simple way to browse, book, and attend art classes, all within a seamless online platform.
-   - Platform: Build a trusted, easy-to-use web app that connects artists and students through learning and creativity.
+## 2. High-Level Features
 
- 4. User Flows
-   - Artist Flow:
-     1. Sign up or log in.
-     2. Create a profile showcasing their work.
-     3. Add classes with schedules, pricing, and availability.
-     4. Manage incoming bookings and payments.
-   
-   - Student Flow:
-     1. Browse available classes.
-     2. Book and pay for a session.
-     3. Attend the class and leave feedback (optional).
-     4. View booking history and upcoming classes in their profile.
+- **User Profiles**:
+  - Artists and students have distinct profile pages.
+  - Artists showcase their artwork and list available classes.
+  - Students can view their booking history and class schedules.
 
-     Studio Sessions - Technical Architecture Overview
-1. Architecture Overview
-Studio Sessions is a modular microservices-based application designed to connect artists with students for art classes. Each module serves a distinct purpose and is deployed and managed independently. The system uses a combination of technologies to ensure scalability, flexibility, and security.
+- **Class Booking System**:
+  - A calendar or schedule system where students can view available classes, book a session, and pay.
+  - Real-time availability updates (optional with WebSockets).
+  - Notification system for booking confirmations and reminders.
 
-Key Components:
+- **Payment Integration**:
+  - Integration with payment gateways (e.g., Stripe or PayPal) for booking and paying for classes.
+  - Support for both one-time payments and possible future subscriptions for repeat classes.
 
-User Management Service (Java/Quarkus): Handles user registration, authentication, and role-based access (Artist, Student, Admin).
+- **Class Management**:
+  - Artists create and manage their class offerings, including setting availability, prices, and capacity.
+  - Artists can manage bookings, view student attendance, and track payments.
 
-Class Management Service (Node.js/Express): Manages the creation, scheduling, and booking of classes.
+## 3. Goals
 
-Payment Service (Node.js/Express): Facilitates secure payment processing for booking classes.
+- **Artists**: A platform to showcase their work, manage classes, and earn through bookings.
+- **Students**: A simple way to browse, book, and attend art classes, all within a seamless online platform.
+- **Platform**: Build a trusted, easy-to-use web app that connects artists and students through learning and creativity.
 
-Frontend Application (React/TypeScript): Provides an interactive user interface for students and artists to interact with the platform.
+## 4. User Flows
 
-Microservices:
+### - Artist Flow:
+  1. Sign up or log in.
+  2. Create a profile showcasing their work.
+  3. Add classes with schedules, pricing, and availability.
+  4. Manage incoming bookings and payments.
 
-User Management Service:
-Built with Java (Quarkus).
-Handles user roles (Artist, Student, Admin) and JWT-based authentication.
-Externalized configuration for secure handling of environment-specific settings.
-REST API-based communication with the frontend.
+### - Student Flow:
+  1. Browse available classes.
+  2. Book and pay for a session.
+  3. Attend the class and leave feedback (optional).
+  4. View booking history and upcoming classes in their profile.
 
-Class Management Service:
-Node.js/Express microservice.
-Manages the creation of classes by artists and booking by students.
-Interfaces with the Payment Service for booking payments.
+---
 
-Payment Service:
-Node.js/Express microservice with Stripe/PayPal integration.
-Manages one-time payments for individual classes.
+## Technologies Used
 
-Integration Patterns:
-API Gateway (future implementation): Will act as a single entry point for client requests, routing them to the appropriate microservices.
+- **React (TypeScript)**: Main frontend framework.
+- **React Router**: For managing navigation between different pages.
+- **Axios**: For making HTTP requests to the backend REST APIs.
+- **JWT**: Used for user authentication and authorization.
+- **MaterialUI**: For styling the components and making the UI responsive.
 
-Service Communication: Microservices communicate over HTTP/REST, using JSON payloads. In the future, lightweight messaging (e.g., RabbitMQ) could be added for events like class bookings.
+## Running the Project
 
-2. Data Management
+1. Clone the repository.
+2. Install the project dependencies using your package manager.
+3. Set up environment variables by creating a configuration file, ensuring that the API URL points to the backend (either local or production).
+4. Start the development server, and then access the application via a local development URL.
 
-Each microservice is responsible for its own data, ensuring loose coupling between components. Data management is handled via:
+## Communication with Backend
 
-User Management Service: PostgreSQL database for user information, roles, and profiles.
+The frontend communicates with the backend (Java/Quarkus) via REST APIs for:
+- User authentication and session management.
+- Fetching class schedules and booking details.
+- Managing user profiles.
 
-Class Management Service: In-memory data storage for class scheduling, with plans for future persistence using PostgreSQL.
+## Future Enhancements
 
-Payment Service: Payment data is managed securely through third-party payment processors (e.g., Stripe/PayPal).
-
-3. Security
-
-JWT Authentication: The User Management Service handles secure authentication using JSON Web Tokens (JWT).
-
-Role-Based Access Control: Each endpoint in the User Management Service requires specific user roles (Artist, Student, Admin), ensuring that only authorized users can access certain features.
-
-Externalized Configuration: Sensitive information, such as database passwords and mailer credentials, are stored securely as environment variables.
-
-4. Deployment
-
-Local Development: Services are run locally using Quarkus for Java and Node.js for Express-based microservices.
-
-Production Deployment: The backend is deployed on Heroku, with plans to potentially scale specific services using containerization (e.g., Docker) and orchestration tools (e.g., Kubernetes).
+- Payments module integration.
+- Improved UI/UX for managing bookings and classes.
+- User profile enhancements (e.g., profile picture uploads).
+- Class filtering and search functionality.
