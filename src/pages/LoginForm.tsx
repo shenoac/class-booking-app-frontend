@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, TextField, Box, Typography, Alert } from '@mui/material';
+import { Button, TextField, Box, Typography, Alert, Link } from '@mui/material'; // Import Link component from MUI
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -111,6 +111,15 @@ const LoginForm: React.FC = () => {
               {message}
             </Alert>
           )}
+
+          {/* Add the Forgot Password link below the Login button */}
+          <Link
+            href="/reset-password-request" // Link to the reset password request page
+            variant="body2" // Smaller text size
+            sx={{ display: 'block', marginTop: 2, cursor: 'pointer' }} // Styling for spacing and pointer cursor
+          >
+            Forgot Password?
+          </Link>
         </Box>
       </Box>
     </ThemeProvider>
