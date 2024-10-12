@@ -3,31 +3,30 @@ import axios from 'axios';
 import { Grid, Card, CardContent, Typography, Button, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// Custom theme with your color scheme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#D8BFD8', // Mauve for buttons
+      main: '#D8BFD8', 
     },
     background: {
-      default: '#FFFFFF', // White background
+      default: '#FFFFFF', 
     },
     grey: {
-      300: '#F0F0F0', // Light grey for cards
+      300: '#F0F0F0', 
     },
   },
   typography: {
-    fontFamily: 'Arial, sans-serif', // Font customization
+    fontFamily: 'Arial, sans-serif', 
   },
 });
 
 interface ClassData {
   id: string;
-  title: string;
+  className: string;
   description: string;
   schedule: string;
-  max_capacity: number;
-  booked_slots: number;
+  maxCapacity: number;
+  bookedSlots: number;
 }
 
 const Classes: React.FC = () => {
@@ -37,7 +36,7 @@ const Classes: React.FC = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_CLASS_MGMT_API_URL}/api/classes`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/classes`);
         setClasses(response.data);
         setLoading(false);
       } catch (error) {
@@ -58,13 +57,13 @@ const Classes: React.FC = () => {
       {/* Box component to add padding and white border */}
       <Box
         sx={{
-          backgroundColor: theme.palette.background.default,  // White background
-          padding: 3,  // Padding around the entire page content
-          borderRadius: '8px',  // Rounded corners
-          border: '1px solid white',  // White border around the content
-          boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',  // Optional: light shadow for effect
-          maxWidth: '1200px',  // Restrict width if needed
-          margin: 'auto',  // Center the content
+          backgroundColor: theme.palette.background.default, 
+          padding: 3,  
+          borderRadius: '8px',  
+          border: '1px solid white',  
+          boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',  
+          maxWidth: '1200px',  
+          margin: 'auto',
         }}
       >
         <Typography variant="h3" gutterBottom align="center">
@@ -77,7 +76,7 @@ const Classes: React.FC = () => {
                 <Card style={{ backgroundColor: theme.palette.grey[300] }}>
                   <CardContent>
                     <Typography variant="h5" gutterBottom>
-                      {classData.title}
+                      {classData.className}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
                       Date: {new Date(classData.schedule).toLocaleDateString()}
@@ -86,7 +85,7 @@ const Classes: React.FC = () => {
                       {classData.description}
                     </Typography>
                     <Typography variant="body1" color="textPrimary">
-                      Available Spots: {classData.max_capacity - classData.booked_slots}
+                        Available Spots: {(classData.maxCapacity ?? 0) - (classData.bookedSlots ?? 0)}
                     </Typography>
                     <Box mt={2}>
                       <Button variant="contained" color="primary">
