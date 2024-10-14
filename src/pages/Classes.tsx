@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Grid, Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 
 // Custom theme with your color scheme
 const theme = createTheme({
@@ -50,6 +51,8 @@ const Classes: React.FC = () => {
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');  // For error handling in the dialog
+
+  const navigate = useNavigate();  // Initialize the navigate function
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -101,6 +104,7 @@ const Classes: React.FC = () => {
 
       alert("Booking successful!");  // Show success message
       setDialogOpen(false);  // Close the dialog after success
+      navigate("/dashboard");  // Redirect to the dashboard after booking
     } catch (error) {
       console.error("Error booking class:", error);
       setErrorMessage("Booking failed. Please try again.");

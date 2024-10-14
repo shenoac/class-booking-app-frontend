@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Avatar, Menu, MenuItem, IconButton, Card, CardContent, CircularProgress, Button } from '@mui/material';
+import { Typography, Box, Avatar, Menu, MenuItem, IconButton, Card, CardContent, CircularProgress, Button, Dialog, DialogTitle, DialogActions } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
+import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 
 const theme = createTheme({
@@ -29,6 +30,8 @@ const Dashboard: React.FC = () => {
   const open = Boolean(anchorEl);
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null); // For holding the booking to delete
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -77,6 +80,37 @@ const Dashboard: React.FC = () => {
 
   const goToClasses = () => {
     navigate('/classes');  // Navigate to the Classes page
+  };
+
+  const handleDeleteClick = (bookingId: number) => {
+    setSelectedBookingId(bookingId);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    const token = localStorage.getItem('authToken');
+    if (!token || !selectedBookingId) return;
+
+    try {
+      await axios.delete(`http://localhost:8080/bookings/delete/${selectedBookingId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert("Booking deleted successfully!");
+
+      // Remove the deleted booking from the list
+      setBookings(bookings.filter((booking) => booking.id !== selectedBookingId));
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      alert("Failed to delete booking. Please try again.");
+    } finally {
+      setDeleteDialogOpen(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
   };
 
   return (
@@ -145,10 +179,10 @@ const Dashboard: React.FC = () => {
         ) : bookings.length > 0 ? (
           <Box>
             {bookings.map((booking) => (
-              <Card key={booking.id} sx={{ marginBottom: 2 }}>
+              <Card key={booking.id} sx={{ marginBottom: 2, position: 'relative' }}>
                 <CardContent>
                   <Typography variant="h6" gutterBottom>
-                    Class ID: {booking.classId}
+                    Class: {booking.className}
                   </Typography>
                   <Typography variant="body1">
                     Date: {new Date(booking.bookingDate).toLocaleString()}
@@ -159,6 +193,14 @@ const Dashboard: React.FC = () => {
                   <Typography variant="body2" color="textSecondary">
                     Payment Status: {booking.paymentStatus}
                   </Typography>
+
+                  {/* Add delete button in the bottom right */}
+                  <IconButton
+                    sx={{ position: 'absolute', bottom: 8, right: 8 }}
+                    onClick={() => handleDeleteClick(booking.id)}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                 </CardContent>
               </Card>
             ))}
@@ -167,12 +209,24 @@ const Dashboard: React.FC = () => {
           <Typography variant="body1">You have no bookings yet.</Typography>
         )}
 
-        {/* Add the "Classes" button below the bookings */}
         <Box mt={2}>
           <Button variant="contained" color="primary" onClick={goToClasses}>
             View Available Classes
           </Button>
         </Box>
+
+        {/* Delete confirmation dialog */}
+        <Dialog open={deleteDialogOpen} onClose={handleDeleteCancel}>
+          <DialogTitle>Are you sure you want to delete this booking?</DialogTitle>
+          <DialogActions>
+            <Button onClick={handleDeleteCancel} color="primary">
+              No
+            </Button>
+            <Button onClick={handleDeleteConfirm} color="primary" variant="contained">
+              Yes, Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </ThemeProvider>
   );
