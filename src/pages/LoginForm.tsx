@@ -120,6 +120,13 @@ const LoginForm: React.FC = () => {
           >
             Forgot Password?
           </Link>
+          <Link
+            href="/register" // Link to the reset password request page
+            variant="body2" // Smaller text size
+            sx={{ display: 'block', marginTop: 0, cursor: 'pointer' }} // Styling for spacing and pointer cursor
+          >
+            Register
+          </Link>
         </Box>
       </Box>
     </ThemeProvider>
