@@ -7,17 +7,17 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#D8BFD8', // Mauve for buttons
+      main: '#D8BFD8',
     },
     background: {
-      default: '#FFFFFF', // White background
+      default: '#FFFFFF',
     },
     grey: {
-      300: '#F0F0F0', // Light grey for cards
+      300: '#F0F0F0',
     },
   },
   typography: {
-    fontFamily: 'Arial, sans-serif', // Font customization
+    fontFamily: 'Arial, sans-serif',
   },
 });
 
@@ -41,7 +41,7 @@ const getClassImage = (className: string) => {
   } else if (className.toLowerCase().includes("sketch")) {
     return "/images/sketches.jpg";
   }
-  return "/images/default.jpg";  // Fallback image
+  return "/images/default.jpg";
 };
 
 const Classes: React.FC = () => {
@@ -49,6 +49,7 @@ const Classes: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');  // For error handling in the dialog
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -66,12 +67,44 @@ const Classes: React.FC = () => {
   }, []);
 
   const handleBookNowClick = (classData: ClassData) => {
-    setSelectedClass(classData);  // Set the selected class data
-    setDialogOpen(true);  // Open the dialog
+    setSelectedClass(classData);
+    setDialogOpen(true);
+    setErrorMessage('');  // Reset any previous error message when opening a new dialog
   };
 
   const handleClose = () => {
-    setDialogOpen(false);  // Close the dialog
+    setDialogOpen(false);
+  };
+
+  const handleConfirmBooking = async () => {
+    const token = localStorage.getItem('authToken');
+
+    if (!token) {
+      setErrorMessage("Please log in to make a booking.");
+      return;
+    }
+
+    try {
+      // Send booking request to the backend
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/bookings/create`,
+        new URLSearchParams({
+          classId: selectedClass?.id || '',  // Pass the selected class ID
+        }),
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }
+      );
+
+      alert("Booking successful!");  // Show success message
+      setDialogOpen(false);  // Close the dialog after success
+    } catch (error) {
+      console.error("Error booking class:", error);
+      setErrorMessage("Booking failed. Please try again.");
+    }
   };
 
   if (loading) {
@@ -100,7 +133,6 @@ const Classes: React.FC = () => {
               <Grid item xs={12} sm={6} md={4} key={classData.id}>
                 <Card
                   style={{
-                    
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                   }}
@@ -122,7 +154,7 @@ const Classes: React.FC = () => {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleBookNowClick(classData)}  // Open dialog with selected class
+                        onClick={() => handleBookNowClick(classData)}  // Open dialog
                       >
                         Book Now
                       </Button>
@@ -136,7 +168,7 @@ const Classes: React.FC = () => {
           <Typography>No classes available.</Typography>
         )}
 
-        {/* Dialog for displaying class details */}
+        {/* Dialog for displaying class details and handling bookings */}
         <Dialog open={dialogOpen} onClose={handleClose}>
           <DialogTitle>{selectedClass?.className}</DialogTitle>
           <DialogContent>
@@ -146,7 +178,7 @@ const Classes: React.FC = () => {
                   backgroundImage: `url(${getClassImage(selectedClass.className)})`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
-                  height: '300px',  // Adjust height if needed
+                  height: '300px',
                 }}
               />
             )}
@@ -157,17 +189,22 @@ const Classes: React.FC = () => {
               Available Spots: {selectedClass ? selectedClass.maxCapacity - selectedClass.bookedSlots : 0}
             </Typography>
             <Typography variant="body1" color="textPrimary">
-      Price: ${selectedClass?.price}  {/* Display price here */}
-    </Typography>
+              Price: ${selectedClass?.price}
+            </Typography>
             <Typography variant="body2" paragraph>
               {selectedClass?.description}
             </Typography>
+            {errorMessage && (
+              <Typography color="error" variant="body2">
+                {errorMessage}  {/* Display error message if any */}
+              </Typography>
+            )}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
               Close
             </Button>
-            <Button onClick={handleClose} color="primary" variant="contained">
+            <Button onClick={handleConfirmBooking} color="primary" variant="contained">
               Confirm Booking
             </Button>
           </DialogActions>

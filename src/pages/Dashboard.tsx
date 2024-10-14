@@ -1,26 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Avatar, Menu, MenuItem, IconButton, Card, CardContent, CircularProgress } from '@mui/material';
+import { Typography, Box, Avatar, Menu, MenuItem, IconButton, Card, CardContent, CircularProgress, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import VpnKeyIcon from '@mui/icons-material/VpnKey'; // Optional icon for "Change Password"
-import LogoutIcon from '@mui/icons-material/Logout'; // Optional icon for "Logout"
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import LogoutIcon from '@mui/icons-material/Logout';
 import axios from 'axios';
 
-// Custom theme with your color scheme
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#D8BFD8', // Mauve for buttons
+      main: '#D8BFD8',
     },
     secondary: {
-      main: '#4B0082', // Dark red for logout button
+      main: '#4B0082',
     },
     background: {
-      default: '#FFFFFF', // White background
+      default: '#FFFFFF',
     },
   },
   typography: {
-    fontFamily: 'Arial, sans-serif', // Font customization
+    fontFamily: 'Arial, sans-serif',
   },
 });
 
@@ -31,7 +30,6 @@ const Dashboard: React.FC = () => {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch bookings on page load
   useEffect(() => {
     const fetchBookings = async () => {
       const token = localStorage.getItem('authToken');
@@ -46,18 +44,17 @@ const Dashboard: React.FC = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setBookings(response.data); // Store bookings data in state
+        setBookings(response.data);
       } catch (error) {
         console.error('Error fetching bookings:', error);
       } finally {
-        setLoading(false); // Stop the loading spinner once the call is done
+        setLoading(false);
       }
     };
 
     fetchBookings();
   }, [navigate]);
 
-  // Menu controls
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -78,6 +75,10 @@ const Dashboard: React.FC = () => {
     handleMenuClose();
   };
 
+  const goToClasses = () => {
+    navigate('/classes');  // Navigate to the Classes page
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -90,17 +91,15 @@ const Dashboard: React.FC = () => {
           maxWidth: '600px',
           margin: '50px auto',
           textAlign: 'center',
-          position: 'relative', // Relative to position the Avatar icon
+          position: 'relative',
         }}
       >
-        {/* Avatar IconButton in the top-right corner */}
         <Box sx={{ position: 'absolute', top: '16px', right: '16px' }}>
           <IconButton onClick={handleMenuOpen} size="small">
-            <Avatar sx={{ width: 32, height: 32 }}>U</Avatar> {/* Placeholder for user avatar */}
+            <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
           </IconButton>
         </Box>
 
-        {/* Menu for Avatar */}
         <Menu
           anchorEl={anchorEl}
           open={open}
@@ -137,12 +136,10 @@ const Dashboard: React.FC = () => {
           </MenuItem>
         </Menu>
 
-        {/* Dashboard content */}
         <Typography variant="h5" gutterBottom>
           My Bookings
         </Typography>
 
-        {/* Loading spinner or bookings content */}
         {loading ? (
           <CircularProgress />
         ) : bookings.length > 0 ? (
@@ -169,6 +166,13 @@ const Dashboard: React.FC = () => {
         ) : (
           <Typography variant="body1">You have no bookings yet.</Typography>
         )}
+
+        {/* Add the "Classes" button below the bookings */}
+        <Box mt={2}>
+          <Button variant="contained" color="primary" onClick={goToClasses}>
+            View Available Classes
+          </Button>
+        </Box>
       </Box>
     </ThemeProvider>
   );
