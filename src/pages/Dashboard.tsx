@@ -39,7 +39,7 @@ const Dashboard: React.FC = () => {
       }
 
       try {
-        const response = await axios.get('http://localhost:8080/auth/my-bookings', {
+        const response = await axios.get('http://localhost:8080/bookings/my-bookings', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
