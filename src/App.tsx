@@ -10,6 +10,7 @@ import ResetPassword from './pages/ResetPassword';
 import Classes from './pages/Classes';
 import ArtistProfile from './pages/ArtistProfile';
 import ArtistProfileUpdate from './pages/ArtistProfileUpdate';
+import PasswordReset from './pages/PasswordReset';
 
 const App: React.FC = () => {
   return (
@@ -21,7 +22,8 @@ const App: React.FC = () => {
         <Route path="/registration-success" element={<RegistrationSuccess />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/reset-password-request" element={<PasswordResetRequest />} />
-        <Route path="/password-reset" element={<ResetPassword />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/classes" element={<Classes />} />
         <Route path="/artist/:artistName" element={<ArtistProfile />} />
         <Route path="/artist/profile/update" element={<ArtistProfileUpdate />} />
