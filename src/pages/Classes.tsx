@@ -2,17 +2,20 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Grid, Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import { useNavigate } from 'react-router-dom';  
 import ArtistProfile from './ArtistProfile';
 
-// Custom theme with your color scheme
+
 const theme = createTheme({
   palette: {
     primary: {
       main: '#D8BFD8',
     },
+    secondary: {
+      main: '#FFFFFF',
+    },
     background: {
-      default: '#FFFFFF',
+      default: '#F5F5F5',
     },
     grey: {
       300: '#F0F0F0',
@@ -35,7 +38,6 @@ interface ClassData {
   artistProfile: ArtistProfile;
 }
 
-// Helper function to get the background image based on the class name
 const getClassImage = (className: string) => {
   if (className.toLowerCase().includes("oil painting")) {
     return "/images/oil_painting.jpg";
@@ -52,9 +54,11 @@ const Classes: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');  // For error handling in the dialog
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const navigate = useNavigate();  // Initialize the navigate function
+  const navigate = useNavigate();
+
+  const isLoggedIn = localStorage.getItem('authToken'); 
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -74,7 +78,7 @@ const Classes: React.FC = () => {
   const handleBookNowClick = (classData: ClassData) => {
     setSelectedClass(classData);
     setDialogOpen(true);
-    setErrorMessage('');  // Reset any previous error message when opening a new dialog
+    setErrorMessage('');
   };
 
   const handleClose = () => {
@@ -90,11 +94,10 @@ const Classes: React.FC = () => {
     }
 
     try {
-      // Send booking request to the backend
       const response = await axios.post(
         `${process.env.REACT_APP_API_URL}/bookings/create`,
         new URLSearchParams({
-          classId: selectedClass?.id || '',  // Pass the selected class ID
+          classId: selectedClass?.id || '',
         }),
         {
           headers: {
@@ -104,9 +107,9 @@ const Classes: React.FC = () => {
         }
       );
 
-      alert("Booking successful!");  // Show success message
-      setDialogOpen(false);  // Close the dialog after success
-      navigate("/dashboard");  // Redirect to the dashboard after booking
+      alert("Booking successful!");
+      setDialogOpen(false);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error booking class:", error);
       setErrorMessage("Booking failed. Please try again.");
@@ -119,7 +122,8 @@ const Classes: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
+
+            <Box
         sx={{
           backgroundColor: theme.palette.background.default,
           padding: 3,
@@ -160,7 +164,7 @@ const Classes: React.FC = () => {
                       <Button
                         variant="contained"
                         color="primary"
-                        onClick={() => handleBookNowClick(classData)}  // Open dialog
+                        onClick={() => handleBookNowClick(classData)}
                       >
                         Book Now
                       </Button>
@@ -174,7 +178,6 @@ const Classes: React.FC = () => {
           <Typography>No classes available.</Typography>
         )}
 
-        {/* Dialog for displaying class details and handling bookings */}
         <Dialog open={dialogOpen} onClose={handleClose}>
           <DialogTitle>{selectedClass?.className}</DialogTitle>
           <DialogContent>
@@ -197,13 +200,10 @@ const Classes: React.FC = () => {
             <Typography variant="body1" color="textPrimary">
               Price: ${selectedClass?.price}
             </Typography>
-            <Typography variant="body2" paragraph>
-              {selectedClass?.description}
-            </Typography>
             <Typography variant="body2" color="primary">
               Artist: 
                 <Button 
-                  onClick={() => navigate(`/artist/${selectedClass?.artistProfile.artistName}`)}  // Navigate to artist profile
+                  onClick={() => navigate(`/artist/${selectedClass?.artistProfile.artistName}`)}
                   color="primary"
                 >
                 {selectedClass?.artistProfile.artistName}
@@ -211,7 +211,7 @@ const Classes: React.FC = () => {
             </Typography>
             {errorMessage && (
               <Typography color="error" variant="body2">
-                {errorMessage}  {/* Display error message if any */}
+                {errorMessage}
               </Typography>
             )}
           </DialogContent>
@@ -230,3 +230,7 @@ const Classes: React.FC = () => {
 };
 
 export default Classes;
+function setDrawerOpen(open: boolean) {
+  throw new Error('Function not implemented.');
+}
+

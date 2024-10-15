@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Button, TextField, Box, Typography, Alert } from '@mui/material';
+import { Button, TextField, Box, Typography, Alert, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -113,6 +113,14 @@ const RegistrationForm: React.FC = () => {
               {message}
             </Alert>
           )}
+          {/* Add a login link */}
+            <Link
+            href="/login" 
+            variant="body2" 
+            sx={{ display: 'block', marginTop: 2, cursor: 'pointer' }} 
+          >
+            Login
+          </Link>
         </Box>
       </Box>
     </ThemeProvider>
