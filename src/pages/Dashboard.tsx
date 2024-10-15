@@ -33,6 +33,21 @@ const Dashboard: React.FC = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null); // For holding the booking to delete
 
+  const getRoleFromToken = () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return null;
+  
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));  // Decode JWT token payload
+      return payload.role;
+    } catch (error) {
+      console.error("Error parsing token", error);
+      return null;
+    }
+  };
+
+  const role = getRoleFromToken();  // Get role from token
+
   useEffect(() => {
     const fetchBookings = async () => {
       const token = localStorage.getItem('authToken');
@@ -80,6 +95,11 @@ const Dashboard: React.FC = () => {
 
   const goToClasses = () => {
     navigate('/classes');  // Navigate to the Classes page
+  };
+
+  const goToProfileUpdate = () => {
+    navigate('/artist/profile/update');  // Navigate to the Profile Update page
+    handleMenuClose();
   };
 
   const handleDeleteClick = (bookingId: number) => {
@@ -164,6 +184,14 @@ const Dashboard: React.FC = () => {
             <VpnKeyIcon fontSize="small" sx={{ mr: 1 }} />
             Change Password
           </MenuItem>
+
+          {role === 'artist' && (  // Conditionally render Profile Update for artists only
+            <MenuItem onClick={goToProfileUpdate}>
+              <VpnKeyIcon fontSize="small" sx={{ mr: 1 }} />
+              Update Profile
+            </MenuItem>
+          )}
+
           <MenuItem onClick={handleLogout}>
             <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
             Logout
