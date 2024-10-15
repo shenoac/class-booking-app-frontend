@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Grid, Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';  // Import useNavigate
+import ArtistProfile from './ArtistProfile';
 
 // Custom theme with your color scheme
 const theme = createTheme({
@@ -31,6 +32,7 @@ interface ClassData {
   bookedSlots: number;
   imageUrl: string; 
   price: number;
+  artistProfile: ArtistProfile;
 }
 
 // Helper function to get the background image based on the class name
@@ -197,6 +199,15 @@ const Classes: React.FC = () => {
             </Typography>
             <Typography variant="body2" paragraph>
               {selectedClass?.description}
+            </Typography>
+            <Typography variant="body2" color="primary">
+              Artist: 
+                <Button 
+                  onClick={() => navigate(`/artist/${selectedClass?.artistProfile.artistName}`)}  // Navigate to artist profile
+                  color="primary"
+                >
+                {selectedClass?.artistProfile.artistName}
+                </Button>
             </Typography>
             {errorMessage && (
               <Typography color="error" variant="body2">
