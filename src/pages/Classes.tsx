@@ -162,12 +162,11 @@ const Classes: React.FC = () => {
           borderRadius: '8px',
           border: '1px solid white',
           boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',
-          maxWidth: '1200px',
-          margin: 'auto',
-          position: 'relative', // Ensure relative positioning for avatar placement
+          maxWidth: '600px',
+          margin: '50px auto',
+          position: 'relative', 
         }}
       >
-        {/* Avatar and Menu */}
         <Box sx={{ position: 'absolute', top: '16px', right: '16px' }}>
           <IconButton onClick={handleMenuOpen} size="small">
             <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
@@ -206,7 +205,7 @@ const Classes: React.FC = () => {
           </MenuItem>
 
            {/* Conditionally render Update Profile for artists */}
-           {role === 'artist' && (
+           {role === 'ARTIST' && (
             <MenuItem onClick={goToProfileUpdate}>
               <VpnKeyIcon fontSize="small" sx={{ mr: 1 }} />
               Update Profile
@@ -264,42 +263,51 @@ const Classes: React.FC = () => {
           <Typography>No classes available.</Typography>
         )}
 
-        <Dialog open={dialogOpen} onClose={handleClose}>
-          <DialogTitle>{selectedClass?.className}</DialogTitle>
-          <DialogContent>
-  <img 
-    src={getClassImage(selectedClass?.className || '')} 
-    alt={selectedClass?.className} 
-    style={{ width: '100%', height: 'auto', marginBottom: '10px' }} 
-  />
-  <Typography variant="body2" color="textSecondary">
-    Artist: {selectedClass?.artistProfile?.artistName || 'Unknown'}
-  </Typography>
-  <Typography variant="body2" color="textSecondary">
-    Date: {new Date(selectedClass?.schedule || '').toLocaleDateString()}
-  </Typography>
-  <Typography variant="body1" color="textPrimary">
-    Available Spots: {selectedClass ? selectedClass.maxCapacity - selectedClass.bookedSlots : 0}
-  </Typography>
-  <Typography variant="body1" color="textPrimary">
-    Price: ${selectedClass?.price}
-  </Typography>
-  {errorMessage && (
-    <Typography color="error" variant="body2">
-      {errorMessage}
+<Dialog open={dialogOpen} onClose={handleClose}>
+  <DialogTitle>{selectedClass?.className}</DialogTitle>
+  <DialogContent>
+    <img 
+      src={getClassImage(selectedClass?.className || '')} 
+      alt={selectedClass?.className} 
+      style={{ width: '100%', height: 'auto', marginBottom: '10px' }} 
+    />
+    
+    {/* Make Artist's Name Clickable */}
+    <Typography 
+      variant="body2" 
+      color="primary" 
+      sx={{ cursor: 'pointer' }} 
+      onClick={() => navigate(`/artist/${selectedClass?.artistProfile.artistName}`)}
+    >
+      Artist: {selectedClass?.artistProfile?.artistName || 'Unknown'}
     </Typography>
-  )}
-</DialogContent>
 
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Close
-            </Button>
-            <Button onClick={handleConfirmBooking} color="primary" variant="contained">
-              Confirm Booking
-            </Button>
-          </DialogActions>
-        </Dialog>
+    <Typography variant="body2" color="textSecondary">
+      Date: {new Date(selectedClass?.schedule || '').toLocaleDateString()}
+    </Typography>
+    <Typography variant="body1" color="textPrimary">
+      Available Spots: {selectedClass ? selectedClass.maxCapacity - selectedClass.bookedSlots : 0}
+    </Typography>
+    <Typography variant="body1" color="textPrimary">
+      Price: ${selectedClass?.price}
+    </Typography>
+    {errorMessage && (
+      <Typography color="error" variant="body2">
+        {errorMessage}
+      </Typography>
+    )}
+  </DialogContent>
+
+  <DialogActions>
+    <Button onClick={handleClose} color="primary">
+      Close
+    </Button>
+    <Button onClick={handleConfirmBooking} color="primary" variant="contained">
+      Confirm Booking
+    </Button>
+  </DialogActions>
+</Dialog>
+
       </Box>
     </ThemeProvider>
   );
