@@ -29,6 +29,8 @@ interface ClassData {
   artistProfile: ArtistProfile;
 }
 
+
+
 const getClassImage = (className: string) => {
   if (className.toLowerCase().includes("oil painting")) {
     return "/images/oil_painting.jpg";
@@ -265,21 +267,30 @@ const Classes: React.FC = () => {
         <Dialog open={dialogOpen} onClose={handleClose}>
           <DialogTitle>{selectedClass?.className}</DialogTitle>
           <DialogContent>
-            <Typography variant="body2" color="textSecondary">
-              Date: {new Date(selectedClass?.schedule || '').toLocaleDateString()}
-            </Typography>
-            <Typography variant="body1" color="textPrimary">
-              Available Spots: {selectedClass ? selectedClass.maxCapacity - selectedClass.bookedSlots : 0}
-            </Typography>
-            <Typography variant="body1" color="textPrimary">
-              Price: ${selectedClass?.price}
-            </Typography>
-            {errorMessage && (
-              <Typography color="error" variant="body2">
-                {errorMessage}
-              </Typography>
-            )}
-          </DialogContent>
+  <img 
+    src={getClassImage(selectedClass?.className || '')} 
+    alt={selectedClass?.className} 
+    style={{ width: '100%', height: 'auto', marginBottom: '10px' }} 
+  />
+  <Typography variant="body2" color="textSecondary">
+    Artist: {selectedClass?.artistProfile?.artistName || 'Unknown'}
+  </Typography>
+  <Typography variant="body2" color="textSecondary">
+    Date: {new Date(selectedClass?.schedule || '').toLocaleDateString()}
+  </Typography>
+  <Typography variant="body1" color="textPrimary">
+    Available Spots: {selectedClass ? selectedClass.maxCapacity - selectedClass.bookedSlots : 0}
+  </Typography>
+  <Typography variant="body1" color="textPrimary">
+    Price: ${selectedClass?.price}
+  </Typography>
+  {errorMessage && (
+    <Typography color="error" variant="body2">
+      {errorMessage}
+    </Typography>
+  )}
+</DialogContent>
+
           <DialogActions>
             <Button onClick={handleClose} color="primary">
               Close

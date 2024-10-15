@@ -185,7 +185,7 @@ const Dashboard: React.FC = () => {
             Change Password
           </MenuItem>
 
-          {role === 'artist' && (  // Conditionally render Profile Update for artists only
+          {role === 'ARTIST' && (  // Conditionally render Profile Update for artists only
             <MenuItem onClick={goToProfileUpdate}>
               <VpnKeyIcon fontSize="small" sx={{ mr: 1 }} />
               Update Profile
