@@ -1,29 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Grid, Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Grid, Card, CardContent, Typography, Button, Box, Dialog, DialogTitle, DialogContent, DialogActions, Avatar, IconButton, Menu, MenuItem } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';  
-import ArtistProfile from './ArtistProfile';
-
+import { useNavigate } from 'react-router-dom';
+import ArtistProfile from './ArtistProfile';  // Assuming this is defined
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const theme = createTheme({
   palette: {
-    primary: {
-      main: '#D8BFD8',
-    },
-    secondary: {
-      main: '#FFFFFF',
-    },
-    background: {
-      default: '#F5F5F5',
-    },
-    grey: {
-      300: '#F0F0F0',
-    },
+    primary: { main: '#D8BFD8' },
+    secondary: { main: '#FFFFFF' },
+    background: { default: '#F5F5F5' },
+    grey: { 300: '#F0F0F0' },
   },
-  typography: {
-    fontFamily: 'Arial, sans-serif',
-  },
+  typography: { fontFamily: 'Arial, sans-serif' },
 });
 
 interface ClassData {
@@ -55,10 +46,27 @@ const Classes: React.FC = () => {
   const [selectedClass, setSelectedClass] = useState<ClassData | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-
+  
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  
   const navigate = useNavigate();
+  const isLoggedIn = localStorage.getItem('authToken');
 
-  const isLoggedIn = localStorage.getItem('authToken'); 
+  const getRoleFromToken = () => {
+    const token = localStorage.getItem('authToken');
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));  // Decode JWT token payload
+      return payload.role;
+    } catch (error) {
+      console.error("Error parsing token", error);
+      return null;
+    }
+  };
+
+  const role = getRoleFromToken();
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -71,9 +79,33 @@ const Classes: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchClasses();
   }, []);
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.clear();
+    navigate('/login');
+    handleMenuClose();
+  };
+
+  const handleChangePasswordClick = () => {
+    navigate('/reset-password');
+    handleMenuClose();
+  };
+
+  const goToProfileUpdate = () => {
+    navigate('/artist/profile/update');  // Navigate to Profile Update page
+    handleMenuClose();
+  };
 
   const handleBookNowClick = (classData: ClassData) => {
     setSelectedClass(classData);
@@ -94,7 +126,7 @@ const Classes: React.FC = () => {
     }
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_API_URL}/bookings/create`,
         new URLSearchParams({
           classId: selectedClass?.id || '',
@@ -106,7 +138,6 @@ const Classes: React.FC = () => {
           },
         }
       );
-
       alert("Booking successful!");
       setDialogOpen(false);
       navigate("/dashboard");
@@ -122,8 +153,7 @@ const Classes: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-
-            <Box
+      <Box
         sx={{
           backgroundColor: theme.palette.background.default,
           padding: 3,
@@ -132,11 +162,65 @@ const Classes: React.FC = () => {
           boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',
           maxWidth: '1200px',
           margin: 'auto',
+          position: 'relative', // Ensure relative positioning for avatar placement
         }}
       >
-        <Typography variant="h3" gutterBottom align="center">
+        {/* Avatar and Menu */}
+        <Box sx={{ position: 'absolute', top: '16px', right: '16px' }}>
+          <IconButton onClick={handleMenuOpen} size="small">
+            <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
+          </IconButton>
+        </Box>
+
+        <Menu
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleMenuClose}
+          PaperProps={{
+            elevation: 0,
+            sx: {
+              overflow: 'visible',
+              mt: 1.5,
+              '& .MuiAvatar-root': {
+                width: 32,
+                height: 32,
+                ml: -0.5,
+                mr: 1,
+              },
+            },
+          }}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'center',
+          }}
+        >
+          <MenuItem onClick={handleChangePasswordClick}>
+            <VpnKeyIcon fontSize="small" sx={{ mr: 1 }} />
+            Change Password
+          </MenuItem>
+
+           {/* Conditionally render Update Profile for artists */}
+           {role === 'artist' && (
+            <MenuItem onClick={goToProfileUpdate}>
+              <VpnKeyIcon fontSize="small" sx={{ mr: 1 }} />
+              Update Profile
+            </MenuItem>
+          )}
+
+          <MenuItem onClick={handleLogout}>
+            <LogoutIcon fontSize="small" sx={{ mr: 1 }} />
+            Logout
+          </MenuItem>
+        </Menu>
+
+        <Typography variant="h5" gutterBottom align="center">
           Available Classes
         </Typography>
+        
         {classes.length > 0 ? (
           <Grid container spacing={3}>
             {classes.map((classData) => (
@@ -148,7 +232,7 @@ const Classes: React.FC = () => {
                   }}
                 >
                   <CardContent>
-                    <Typography variant="h5" gutterBottom>
+                    <Typography variant="h6" gutterBottom>
                       {classData.className}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
@@ -181,16 +265,6 @@ const Classes: React.FC = () => {
         <Dialog open={dialogOpen} onClose={handleClose}>
           <DialogTitle>{selectedClass?.className}</DialogTitle>
           <DialogContent>
-            {selectedClass && (
-              <Box
-                sx={{
-                  backgroundImage: `url(${getClassImage(selectedClass.className)})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  height: '300px',
-                }}
-              />
-            )}
             <Typography variant="body2" color="textSecondary">
               Date: {new Date(selectedClass?.schedule || '').toLocaleDateString()}
             </Typography>
@@ -199,15 +273,6 @@ const Classes: React.FC = () => {
             </Typography>
             <Typography variant="body1" color="textPrimary">
               Price: ${selectedClass?.price}
-            </Typography>
-            <Typography variant="body2" color="primary">
-              Artist: 
-                <Button 
-                  onClick={() => navigate(`/artist/${selectedClass?.artistProfile.artistName}`)}
-                  color="primary"
-                >
-                {selectedClass?.artistProfile.artistName}
-                </Button>
             </Typography>
             {errorMessage && (
               <Typography color="error" variant="body2">
@@ -230,7 +295,3 @@ const Classes: React.FC = () => {
 };
 
 export default Classes;
-function setDrawerOpen(open: boolean) {
-  throw new Error('Function not implemented.');
-}
-
