@@ -11,9 +11,15 @@ import Classes from './pages/Classes';
 import ArtistProfile from './pages/ArtistProfile';
 import ArtistProfileUpdate from './pages/ArtistProfileUpdate';
 import PasswordReset from './pages/PasswordReset';
+import PaymentPage from './pages/PaymentPage';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe('pk_test_51QAoRmC5AAacvnwk9RJcn4ynCFBP1ap7YleGvRGPSoojGheWEB8AaKOsYIj5i6xD63Eb4OjofPdOeCcoOpLkAW6c00xxvn2M34');
 
 const App: React.FC = () => {
   return (
+    <Elements stripe={stripePromise}>
     <Router>
       <Routes>
         <Route path="/register" element={<RegistrationForm />} />
@@ -27,8 +33,10 @@ const App: React.FC = () => {
         <Route path="/classes" element={<Classes />} />
         <Route path="/artist/:artistName" element={<ArtistProfile />} />
         <Route path="/artist/profile/update" element={<ArtistProfileUpdate />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Routes>
     </Router>
+    </Elements>
   );
 };
 

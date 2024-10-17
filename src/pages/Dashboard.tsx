@@ -215,12 +215,22 @@ const Dashboard: React.FC = () => {
                   <Typography variant="body1">
                     Date: {new Date(booking.bookingDate).toLocaleString()}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Status: {booking.status}
-                  </Typography>
+
+                  
                   <Typography variant="body2" color="textSecondary">
                     Payment Status: {booking.paymentStatus}
                   </Typography>
+
+                  {(booking.paymentStatus === 'unpaid' || booking.paymentStatus === 'pending') && (
+                  <Button 
+                    variant="contained" 
+                    color="secondary" 
+                    onClick={() => navigate('/payment', { state: { bookingId: booking.id } })}
+                    sx={{ mt: 2 }}
+                  >
+                    Pay Now
+                  </Button>
+      )}
 
                   {/* Add delete button in the bottom right */}
                   <IconButton
