@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 import axios from 'axios';
 import { Button, Box, Typography, CircularProgress, createTheme, ThemeProvider } from '@mui/material';
+import { useLocation } from 'react-router-dom'; // Use to get bookingId from the previous page
 
 const theme = createTheme({
   palette: {
@@ -23,17 +24,57 @@ const theme = createTheme({
 const PaymentPage: React.FC = () => {
   const stripe = useStripe();
   const elements = useElements();
+  const location = useLocation();
+  const { bookingId } = location.state as { bookingId: number };  // Get bookingId from state
+
   const [loading, setLoading] = useState(false);
+  const [price, setPrice] = useState<number | null>(null);  // To store fetched price
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Fetch price when the component mounts
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        const response = await axios.get(`http://localhost:8080/payment-details/price/${bookingId}`);
+        
+        // Log the full response object
+        console.log("Full API Response: ", response);
+
+        // Access the correct field (price) from the response
+        const fetchedPrice = response.data;  // Assuming API directly returns the price
+
+        // Log the fetched price and its type
+        console.log("Fetched price: ", fetchedPrice, "Type of fetchedPrice: ", typeof fetchedPrice);
+
+        setPrice(Number(fetchedPrice)); // Ensure the fetched price is a number
+
+        // Log the converted price
+        console.log("Converted price: ", Number(fetchedPrice), "Type of convertedPrice: ", typeof Number(fetchedPrice));
+
+      } catch (error) {
+        console.error('Error fetching price:', error);
+        setErrorMessage('Error fetching price. Please try again.');
+      }
+    };
+
+    fetchPrice();
+  }, [bookingId]);
 
   const handlePayment = async (event: React.FormEvent) => {
     event.preventDefault();
     setLoading(true);
 
     try {
+      if (price === null) {
+        setErrorMessage('Error: Price not available.');
+        setLoading(false);
+        return;
+      }
+
+      // Create payment intent using the fetched price (still hardcoded for now)
       const { data: paymentIntent } = await axios.post('http://localhost:8080/payments/create', {
-        amount: 1000,
+        amount: price * 100,  // This will later be replaced with 'price'
       });
 
       if (!stripe || !elements) return;
@@ -73,34 +114,46 @@ const PaymentPage: React.FC = () => {
         <Typography variant="h4" gutterBottom>
           Payment Page
         </Typography>
-        <form onSubmit={handlePayment}>
-          <CardElement
-            options={{
-              style: {
-                base: {
-                  fontSize: '16px',
-                  color: '#424770',
-                  '::placeholder': {
-                    color: '#aab7c4',
+
+        {price !== null ? (
+          <>
+            <Typography variant="h6" gutterBottom>
+              Amount to Pay: ${price.toFixed(2)}
+            </Typography>
+
+            <form onSubmit={handlePayment}>
+              <CardElement
+                options={{
+                  style: {
+                    base: {
+                      fontSize: '16px',
+                      color: '#424770',
+                      '::placeholder': {
+                        color: '#aab7c4',
+                      },
+                    },
+                    invalid: {
+                      color: '#9e2146',
+                    },
                   },
-                },
-                invalid: {
-                  color: '#9e2146',
-                },
-              },
-            }}
-          />
-          <Box mt={2}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={!stripe || loading}
-            >
-              {loading ? <CircularProgress size={24} /> : 'Pay Now'}
-            </Button>
-          </Box>
-        </form>
+                }}
+              />
+              <Box mt={2}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  disabled={!stripe || loading}
+                >
+                  {loading ? <CircularProgress size={24} /> : 'Pay Now'}
+                </Button>
+              </Box>
+            </form>
+          </>
+        ) : (
+          <CircularProgress />
+        )}
+
         {errorMessage && <Typography color="error" mt={2}>{errorMessage}</Typography>}
         {successMessage && <Typography color="primary" mt={2}>{successMessage}</Typography>}
       </Box>
