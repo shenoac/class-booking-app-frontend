@@ -223,29 +223,42 @@ const Classes: React.FC = () => {
         </Typography>
         
         {classes.length > 0 ? (
-          <Grid container spacing={3}>
-            {classes.map((classData) => (
-              <Grid item xs={12} sm={6} md={4} key={classData.id}>
-                <Card
-                  style={{
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }}
-                >
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      {classData.className}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Date: {new Date(classData.schedule).toLocaleDateString()}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary" paragraph>
-                      {classData.description}
-                    </Typography>
-                    <Typography variant="body1" color="textPrimary">
-                      Available Spots: {classData.maxCapacity - classData.bookedSlots}
-                    </Typography>
-                    <Box mt={2}>
+        <Grid container spacing={3}>
+        {classes.map((classData) => {
+          const availableSpots = classData.maxCapacity - classData.bookedSlots;
+          
+          return (
+            <Grid item xs={12} sm={6} md={4} key={classData.id}>
+              <Card
+                style={{
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }}
+              >
+                <CardContent>
+                  <Typography variant="h6" gutterBottom>
+                    {classData.className}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Date: {new Date(classData.schedule).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" paragraph>
+                    {classData.description}
+                  </Typography>
+      
+                  {/* Show available spots */}
+                  <Typography variant="body1" color="textPrimary">
+                    Available Spots: {availableSpots}
+                  </Typography>
+      
+                  <Box mt={2}>
+                    {availableSpots === 0 ? (
+                      // Display 'Fully Booked' message when no spots are available
+                      <Typography variant="body2" color="error">
+                        Fully Booked
+                      </Typography>
+                    ) : (
+                      // Display 'Book Now' button if spots are available
                       <Button
                         variant="contained"
                         color="primary"
@@ -253,12 +266,15 @@ const Classes: React.FC = () => {
                       >
                         Book Now
                       </Button>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                    )}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          );
+        })}
+      </Grid>
+      
         ) : (
           <Typography>No classes available.</Typography>
         )}
