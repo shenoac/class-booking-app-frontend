@@ -73,7 +73,7 @@ const PaymentPage: React.FC = () => {
       }
 
       // Create payment intent using the fetched price (still hardcoded for now)
-      const { data: paymentIntent } = await axios.post('${process.env.REACT_APP_API_URL}/payments/create', {
+      const { data: paymentIntent } = await axios.post(`${process.env.REACT_APP_API_URL}/payments/create`, {
         amount: price * 100,  // This will later be replaced with 'price'
       });
 
