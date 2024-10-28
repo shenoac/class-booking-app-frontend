@@ -35,7 +35,7 @@ const ArtistProfileUpdate: React.FC = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await axios.get(`http://localhost:8080/artist-profile/view`, {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/artist-profile/view`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -58,7 +58,7 @@ const ArtistProfileUpdate: React.FC = () => {
     try {
       const token = localStorage.getItem('authToken');
       await axios.post(
-        'http://localhost:8080/artist-profile/create-or-update',
+        `${process.env.REACT_APP_API_URL}/artist-profile/create-or-update`,
         profile,
         {
           headers: {
