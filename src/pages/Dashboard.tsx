@@ -57,7 +57,7 @@ const Dashboard: React.FC = () => {
       }
 
       try {
-        const response = await axios.get('http://localhost:8080/bookings/my-bookings', {
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/bookings/my-bookings`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -112,7 +112,7 @@ const Dashboard: React.FC = () => {
     if (!token || !selectedBookingId) return;
 
     try {
-      await axios.delete(`http://localhost:8080/bookings/delete/${selectedBookingId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/bookings/delete/${selectedBookingId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
