@@ -19,7 +19,7 @@ const ArtistProfile: React.FC = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/artist-profile/view/${artistName}`);
+        const response = await axios.get(`${process.env.REACT_APP_API_URL}/artist-profile/view/${artistName}`);
         setProfile(response.data);
       } catch (error) {
         console.error('Error fetching artist profile:', error);
